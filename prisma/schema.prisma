@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  CUSTOMER
+}
+
+enum StorageStatus {
+  ACTIVE
+  EXPIRING
+  EXPIRED
+  DELIVERED
+}
+
+enum NotificationType {
+  REGISTRATION
+  RENEWAL_REMINDER
+  FINAL_WARNING
+  RENEWAL_CONFIRMATION
+  DELIVERY_CONFIRMATION
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+  password  String
+  createdBy String?  // ID of admin who created this user (for operators)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  createdOperators User[]      @relation("OperatorCreator")
+  assignedLocation Location?
+  customers        Customer[]
+  storages         Storage[]
+  payments         Payment[]
+  notifications    Notification[]
+  creator          User?        @relation("OperatorCreator", fields: [createdBy], references: [id])
+
+  @@map("users")
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  capacity    Int
+  operatorId  String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  operator   User?      @relation(fields: [operatorId], references: [id])
+  customers  Customer[]
+  storages   Storage[]
+
+  @@map("locations")
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String   @unique
+  address      String
+  email        String?
+  operatorId   String
+  locationId   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  operator User      @relation(fields: [operatorId], references: [id])
+  location Location  @relation(fields: [locationId], references: [id])
+  storages Storage[]
+
+  @@map("customers")
+}
+
+model Storage {
+  id             String        @id @default(cuid())
+  customerId     String
+  numberOfPots   Int
+  registrationDate DateTime     @default(now())
+  expiryDate     DateTime
+  status         StorageStatus @default(ACTIVE)
+  operatorId     String
+  locationId     String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  customer      Customer       @relation(fields: [customerId], references: [id])
+  operator      User           @relation(fields: [operatorId], references: [id])
+  location      Location       @relation(fields: [locationId], references: [id])
+  payments      Payment[]
+  notifications Notification[]
+
+  @@map("storages")
+}
+
+model Payment {
+  id          String         @id @default(cuid())
+  storageId   String
+  amount      Float
+  status      PaymentStatus  @default(PENDING)
+  paymentDate DateTime?
+  method      String?        // UPI, CARD, CASH
+  transactionId String?
+  operatorId  String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  storage  Storage @relation(fields: [storageId], references: [id])
+  operator User    @relation(fields: [operatorId], references: [id])
+
+  @@map("payments")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  message   String
+  status    String           @default("PENDING")
+  sentAt    DateTime?
+  storageId String
+  operatorId String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  storage  Storage @relation(fields: [storageId], references: [id])
+  operator User    @relation(fields: [operatorId], references: [id])
+
+  @@map("notifications")
+}
