@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:disabled { background: #ccc; }
+        #result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    
+    <h2>Signup Test</h2>
+    <form id="signupForm">
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" id="signupName" value="Test Admin" required>
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="signupEmail" value="testadmin@example.com" required>
+        </div>
+        <div class="form-group">
+            <label>Phone:</label>
+            <input type="tel" id="signupPhone" value="+1234567890">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="signupPassword" value="password123" required>
+        </div>
+        <div class="form-group">
+            <label>Role:</label>
+            <select id="signupRole">
+                <option value="ADMIN">Admin</option>
+                <option value="OPERATOR">Operator</option>
+                <option value="CUSTOMER">Customer</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Admin Key (for Admin role):</label>
+            <input type="password" id="adminKey" value="1376">
+        </div>
+        <button type="submit" id="signupBtn">Signup</button>
+    </form>
+
+    <h2>Signin Test</h2>
+    <form id="signinForm">
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="signinEmail" value="testadmin@example.com" required>
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="signinPassword" value="password123" required>
+        </div>
+        <button type="submit" id="signinBtn">Signin</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        async function signup() {
+            const btn = document.getElementById('signupBtn');
+            const result = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.textContent = 'Signing up...';
+            
+            const data = {
+                name: document.getElementById('signupName').value,
+                email: document.getElementById('signupEmail').value,
+                phone: document.getElementById('signupPhone').value,
+                password: document.getElementById('signupPassword').value,
+                role: document.getElementById('signupRole').value,
+                isActive: true
+            };
+
+            // Add admin key validation for admin role
+            if (data.role === 'ADMIN') {
+                const adminKey = document.getElementById('adminKey').value;
+                if (adminKey !== '1376') {
+                    result.className = 'error';
+                    result.textContent = 'Invalid admin key';
+                    btn.disabled = false;
+                    btn.textContent = 'Signup';
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const responseData = await response.json();
+                
+                if (response.ok) {
+                    result.className = 'success';
+                    result.textContent = 'Signup successful: ' + JSON.stringify(responseData);
+                } else {
+                    result.className = 'error';
+                    result.textContent = 'Signup failed: ' + responseData.error;
+                }
+            } catch (error) {
+                result.className = 'error';
+                result.textContent = 'Signup error: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Signup';
+            }
+        }
+
+        async function signin() {
+            const btn = document.getElementById('signinBtn');
+            const result = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            
+            const data = {
+                email: document.getElementById('signinEmail').value,
+                password: document.getElementById('signinPassword').value,
+            };
+
+            try {
+                const response = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const responseData = await response.json();
+                
+                if (response.ok) {
+                    result.className = 'success';
+                    result.textContent = 'Signin successful: ' + JSON.stringify(responseData);
+                } else {
+                    result.className = 'error';
+                    result.textContent = 'Signin failed: ' + (responseData.error || 'Unknown error');
+                }
+            } catch (error) {
+                result.className = 'error';
+                result.textContent = 'Signin error: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Signin';
+            }
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            signup();
+        });
+
+        document.getElementById('signinForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            signin();
+        });
+    </script>
+</body>
+</html>

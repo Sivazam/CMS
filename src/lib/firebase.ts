@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
-import { getAuth } from "firebase/auth"
+import { getFirestore, connectFirestoreEmulator, enableMultiTabIndexedDbPersistence } from "firebase/firestore"
+import { getAuth, connectAuthEmulator } from "firebase/auth"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,3 +18,20 @@ const app = initializeApp(firebaseConfig)
 // Initialize services
 export const db = getFirestore(app)
 export const auth = getAuth(app)
+
+// Enable offline persistence
+if (typeof window !== 'undefined') {
+  enableMultiTabIndexedDbPersistence(db).catch((err) => {
+    console.log("Firestore persistence failed:", err)
+  })
+}
+
+// Connect to emulators in development
+if (process.env.NODE_ENV === 'development') {
+  // Uncomment these lines if you want to use Firebase emulators
+  // connectFirestoreEmulator(db, 'localhost', 8080)
+  // connectAuthEmulator(auth, 'http://localhost:9099')
+}
+
+// Test the connection
+console.log('Firebase initialized with project:', firebaseConfig.projectId)

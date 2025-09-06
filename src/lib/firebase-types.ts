@@ -3,7 +3,7 @@ export interface User {
   email: string
   name: string
   phone: string
-  role: 'ADMIN' | 'OPERATOR' | 'CUSTOMER'
+  role: 'ADMIN' | 'OPERATOR'
   isActive: boolean
   createdAt: Date
   updatedAt: Date

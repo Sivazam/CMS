@@ -108,7 +108,7 @@ export default function Home() {
                 <a href="/auth/signin">Sign In</a>
               </Button>
               <Button size="sm" asChild>
-                <a href="/auth/signup">Get Started</a>
+                <a href="/auth/signup">Admin/Operator Signup</a>
               </Button>
             </div>
           </div>
@@ -138,10 +138,10 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="text-lg px-8 py-6" asChild>
-                  <a href="/auth/signup">Start Free Trial</a>
+                  <a href="/auth/signup">Admin/Operator Signup</a>
                 </Button>
                 <Button variant="outline" size="lg" className="text-lg px-8 py-6" asChild>
-                  <a href="/auth/signin">View Demo</a>
+                  <a href="/auth/signin">Staff Sign In</a>
                 </Button>
               </div>
             </motion.div>
@@ -310,10 +310,10 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
-                <a href="/auth/signup">Get Started Today</a>
+                <a href="/auth/signup">Admin/Operator Access</a>
               </Button>
               <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-blue-600" asChild>
-                <a href="/auth/signin">Schedule a Demo</a>
+                <a href="/auth/signin">Staff Sign In</a>
               </Button>
             </div>
           </motion.div>

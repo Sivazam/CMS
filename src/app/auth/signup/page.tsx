@@ -77,7 +77,7 @@ export default function SignUpPage() {
             router.push("/auth/signin")
           }, 3000)
         } else {
-          setSuccess("Account created successfully! Please sign in.")
+          setSuccess("Admin account created successfully! Please sign in.")
           setTimeout(() => {
             router.push("/auth/signin")
           }, 2000)
@@ -111,7 +111,7 @@ export default function SignUpPage() {
             Create Account
           </h1>
           <p className="text-slate-600">
-            Join the Smart Cremation Management system
+            Join the Smart Cremation Management system as Admin or Operator
           </p>
         </div>
 
@@ -119,7 +119,7 @@ export default function SignUpPage() {
           <CardHeader>
             <CardTitle>Sign Up</CardTitle>
             <CardDescription>
-              Fill in the details to create your account
+              Fill in the details to create your Admin or Operator account
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -182,12 +182,6 @@ export default function SignUpPage() {
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="CUSTOMER">
-                      <div className="flex items-center space-x-2">
-                        <User className="h-4 w-4" />
-                        <span>Customer</span>
-                      </div>
-                    </SelectItem>
                     <SelectItem value="OPERATOR">
                       <div className="flex items-center space-x-2">
                         <Users className="h-4 w-4" />

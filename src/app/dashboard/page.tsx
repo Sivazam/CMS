@@ -31,12 +31,14 @@ export default function DashboardPage() {
     if (status === "loading") return
     
     if (!session) {
+      console.log("No session found, redirecting to signin")
       router.push("/auth/signin")
       return
     }
 
     // Check if user is active (approved)
     if (!session.user.isActive && session.user.role === "OPERATOR") {
+      console.log("Operator not active, redirecting to waiting page")
       router.push("/auth/waiting")
       return
     }
@@ -61,8 +63,6 @@ export default function DashboardPage() {
         return <AdminDashboard />
       case "OPERATOR":
         return <OperatorDashboard session={session} />
-      case "CUSTOMER":
-        return <CustomerDashboard session={session} />
       default:
         return <div>Invalid role</div>
     }
@@ -246,7 +246,7 @@ function OperatorDashboard({ session }: { session: any }) {
           <div>
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Operator Dashboard</h1>
             <p className="text-slate-600">
-              Location: <Badge variant="secondary">{session?.user?.locationName}</Badge>
+              Location: <Badge variant="secondary">Assigned Location</Badge>
             </p>
           </div>
           <Button>
@@ -323,105 +323,6 @@ function OperatorDashboard({ session }: { session: any }) {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
-  )
-}
-
-// Customer Dashboard Component
-function CustomerDashboard({ session }: { session: any }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Customer Dashboard</h1>
-        <p className="text-slate-600">View your ash pot storage and manage renewals</p>
-      </div>
-
-      {/* Customer Info */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Your Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-slate-600">Name</p>
-              <p className="font-medium">{session?.user?.name}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-600">Phone</p>
-              <p className="font-medium">{session?.user?.phone}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-600">Email</p>
-              <p className="font-medium">{session?.user?.email}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-600">Location</p>
-              <p className="font-medium">{session?.user?.locationName}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Storage Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Storage</CardTitle>
-            <CardDescription>Your active ash pot storage</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">3</div>
-              <p className="text-slate-600">Active Ash Pots</p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Next Renewal</CardTitle>
-            <CardDescription>Upcoming renewal date</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600 mb-2">5 days</div>
-              <p className="text-slate-600">Until renewal</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Clock className="h-5 w-5" />
-              <span>Renew Storage</span>
-            </CardTitle>
-            <CardDescription>
-              Renew your ash pot storage period
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Truck className="h-5 w-5" />
-              <span>Request Delivery</span>
-            </CardTitle>
-            <CardDescription>
-              Request delivery of your ash pots
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
     </motion.div>
   )
 }

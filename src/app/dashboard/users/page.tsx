@@ -215,7 +215,6 @@ export default function UsersManagementPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="OPERATOR">Operator</SelectItem>
-                          <SelectItem value="CUSTOMER">Customer</SelectItem>
                           <SelectItem value="ADMIN">Admin</SelectItem>
                         </SelectContent>
                       </Select>
@@ -293,7 +292,6 @@ export default function UsersManagementPage() {
                 <SelectItem value="ALL">All Roles</SelectItem>
                 <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
                 <SelectItem value={UserRole.OPERATOR}>Operator</SelectItem>
-                <SelectItem value={UserRole.CUSTOMER}>Customer</SelectItem>
               </SelectContent>
             </Select>
           </div>

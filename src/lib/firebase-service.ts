@@ -28,19 +28,30 @@ const toTimestamp = (date: Date): Timestamp => {
 // User Services
 export const userService = {
   async create(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
-    const docRef = await addDoc(collection(db, 'users'), {
-      ...userData,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    })
-    
-    const docSnap = await getDoc(docRef)
-    return {
-      id: docSnap.id,
-      ...docSnap.data(),
-      createdAt: toDate(docSnap.data()?.createdAt),
-      updatedAt: toDate(docSnap.data()?.updatedAt)
-    } as User
+    try {
+      console.log("Creating user in Firestore with data:", userData)
+      const docRef = await addDoc(collection(db, 'users'), {
+        ...userData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      })
+      
+      console.log("User document created with ID:", docRef.id)
+      
+      const docSnap = await getDoc(docRef)
+      const data = docSnap.data()
+      console.log("Retrieved user data:", data)
+      
+      return {
+        id: docSnap.id,
+        ...data,
+        createdAt: toDate(data?.createdAt),
+        updatedAt: toDate(data?.updatedAt)
+      } as User
+    } catch (error) {
+      console.error("Error creating user in Firestore:", error)
+      throw error
+    }
   },
 
   async getById(id: string): Promise<User | null> {
@@ -58,18 +69,32 @@ export const userService = {
   },
 
   async getByEmail(email: string): Promise<User | null> {
-    const q = query(collection(db, 'users'), where('email', '==', email))
-    const querySnapshot = await getDocs(q)
-    
-    if (querySnapshot.empty) return null
-    
-    const doc = querySnapshot.docs[0]
-    return {
-      id: doc.id,
-      ...doc.data(),
-      createdAt: toDate(doc.data()?.createdAt),
-      updatedAt: toDate(doc.data()?.updatedAt)
-    } as User
+    try {
+      console.log("Looking up user by email:", email)
+      const q = query(collection(db, 'users'), where('email', '==', email))
+      const querySnapshot = await getDocs(q)
+      
+      console.log("Query completed, found", querySnapshot.size, "documents")
+      
+      if (querySnapshot.empty) {
+        console.log("No user found with email:", email)
+        return null
+      }
+      
+      const doc = querySnapshot.docs[0]
+      const data = doc.data()
+      console.log("User data found:", data)
+      
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: toDate(data?.createdAt),
+        updatedAt: toDate(data?.updatedAt)
+      } as User
+    } catch (error) {
+      console.error("Error getting user by email:", error)
+      throw error
+    }
   },
 
   async update(id: string, userData: Partial<User>): Promise<User | null> {
